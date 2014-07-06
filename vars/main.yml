@@ -10,3 +10,4 @@ ubuntu_pkg:
   - python-selinux
   - nginx
 
+nodejs_forever: true

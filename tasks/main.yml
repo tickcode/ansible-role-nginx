@@ -73,3 +73,13 @@
 - name: Start the nginx service
   service: name=nginx state=started enabled=yes
   tags: [service,nginx]
+
+- name: install lsof
+  yum: name=lsof state=present
+
+- name: Ensure Node.js and npm are installed.
+  yum: pkg=npm state=present
+
+- name: "Node: Install forever (to run our Node.js app)."
+  npm: name=forever global=yes state=present
+  when: nodejs_forever

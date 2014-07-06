@@ -1,0 +1,52 @@
+worker_processes  1;
+# pid        logs/nginx.pid;
+events { worker_connections  1024; }
+http {
+	include        /etc/nginx/naxsi_core.rules;
+	include       mime.types;
+	default_type  application/octet-stream;
+	sendfile        on;
+	keepalive_timeout  65;
+	client_max_body_size 20M;
+ 
+	index index.html index.htm index.php;
+	# Identical to Apache's DirectoryIndex, setting it in
+	# the http block set it as a default for all server blocks within
+ 
+	server {
+		listen	1025; 
+		# since port 80 is set by default, you do not actually need
+		# to set this, unless of course you are binding to a specific
+		# address such as listen server-ip-address:80 or alternate port; 
+ 
+		server_name  test.extremechemistry.com;
+ 
+		root   /var/cache/nginx/extremechemistry.com/;
+		# You will want to set your root here, since otherwise
+		# $document_root within the php block will not work
+		# if you set it in the location block you would also have 
+		# to set the php block within that location as well
+ 
+		location / {
+			# This would replace the typical mod_rewrite rules for wordpress
+			# it can also be try_files $uri $uri/ @rewrites; where it goes to a 
+			# location @rewrites { ... } where you can place rewrite rules if a file
+			# or folder is not found.
+ 
+			try_files $uri $uri/ /index.php;
+		}
+ 
+		location = /favicon.ico { access_log off; log_not_found off; }
+		# If you haven't created a favicon for your site, you can keep
+		# your access and error logs clean by turning off the logs
+		# when a browser requests the fav icon (its also a good way
+		# to keep your logs from filling with useless information)
+ 
+		location ~ /\. { access_log off; log_not_found off; deny all; }
+		# You want to make sure that Nginx does not serve any .hidden files
+ 
+		include php.conf;
+		# I prefer to keep my php settings in one file, so I can simply
+		# paste this single line for each of my virtual hosts
+	}
+}
