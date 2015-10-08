@@ -1,5 +1,8 @@
 ---
 
+- name: upgrade all packages
+  yum: name=* state=latest
+
 - name: Install the selinux python module
   yum: name=libselinux-python state=present
   when: ansible_os_family == "RedHat"
@@ -12,7 +15,7 @@
 
 - name: Install the nginx packages 
   yum: name={{ item }} state=present
-  with_items: redhat_pkg
+  with_items: http://nginx.org/packages/centos/6/x86_64/RPMS/nginx-1.8.0-1.el6.ngx.x86_64.rpm
   when: ansible_os_family == "RedHat"
   tags: [packages,nginx]
 
@@ -22,6 +25,9 @@
   environment: env
   when: ansible_os_family == "Debian"
   tags: [packages,nginx]
+
+- name: Remove /etc/nginx/conf.d/default.conf because we handle this
+  file: path=/etc/nginx/conf.d/default.conf state=absent
 
 - name: Create the directories for site specific configurations
   file: path=/etc/nginx/{{ item }} state=directory owner=root group={{nginx_group}} mode=0755
@@ -83,3 +89,9 @@
 - name: "Node: Install forever (to run our Node.js app)."
   npm: name=forever global=yes state=present
   when: nodejs_forever
+
+- name: "Check list of Node.js apps running."
+  command: forever list
+  register: forever_list
+  changed_when: false
+

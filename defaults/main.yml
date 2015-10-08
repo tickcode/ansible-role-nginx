@@ -14,12 +14,12 @@ nginx_http_params:
   - access_log "/var/log/nginx/access.log"
   - error_log "/var/log/nginx/error.log"
 
-nginx_sites:
-  default:
-     - listen 80
-     - server_name _
-     - root "/usr/share/nginx/html"
-     - index index.html
+#nginx_sites:
+#  default:
+#     - listen 80
+#     - server_name _
+#     - root "/usr/share/nginx/html"
+#     - index index.html
 
 nginx_configs: {}
 
